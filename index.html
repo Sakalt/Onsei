@@ -2,10 +2,10 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>ゆっくり音声風サンプル</title>
+    <title>エフェクト付きゆっくり音声風サンプル</title>
 </head>
 <body>
-    <h1>ゆっくり音声風サンプル</h1>
+    <h1>エフェクト付きゆっくり音声風サンプル</h1>
     <textarea id="textInput" rows="4" cols="50" placeholder="ここにテキストを入力してください..."></textarea><br>
     <button onclick="speakText()">再生</button>
     
@@ -15,7 +15,29 @@
             const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'ja-JP'; // 日本語を指定
+            utterance.rate = 0.8;     // 速さの調整
+            utterance.pitch = 1.2;    // ピッチの調整
+            
+            // SpeechSynthesis API で音声を生成
             synth.speak(utterance);
+
+            // 音声をエフェクト処理するために Web Audio API を使用
+            utterance.onstart = function() {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(synth.speak(utterance));
+                const gainNode = audioContext.createGain();
+                const delayNode = audioContext.createDelay();
+
+                source.connect(gainNode);
+                gainNode.connect(delayNode);
+                delayNode.connect(audioContext.destination);
+
+                gainNode.gain.value = 1; // 音量調整
+                delayNode.delayTime.value = 0.5; // エコーの遅延時間
+
+                // 音声の再生
+                synth.speak(utterance);
+            };
         }
     </script>
 </body>

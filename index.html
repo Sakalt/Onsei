@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ゆっくり音声風サンプル</title>
+</head>
+<body>
+    <h1>ゆっくり音声風サンプル</h1>
+    <textarea id="textInput" rows="4" cols="50" placeholder="ここにテキストを入力してください..."></textarea><br>
+    <button onclick="speakText()">再生</button>
+    
+    <script>
+        function speakText() {
+            const text = document.getElementById('textInput').value;
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP'; // 日本語を指定
+            synth.speak(utterance);
+        }
+    </script>
+</body>
+</html>

@@ -66,6 +66,7 @@
 <body>
     <h1>エフェクト付きゆっくり音声風サンプル</h1>
     <textarea id="textInput" rows="4" cols="50" placeholder="ここにテキストを入力してください..."></textarea><br>
+    <button id="playButton">再生</button>
     <button id="modeToggle">ダークモード</button>
     <div class="card" id="modeCard">
         <div class="card-inner">
@@ -79,11 +80,14 @@
             const text = document.getElementById('textInput').value;
             const synth = window.speechSynthesis;
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ja-JP';
-            utterance.rate = 0.8;
-            utterance.pitch = 1.2;
+            utterance.lang = 'ja-JP'; // 日本語を指定
+            utterance.rate = 0.5;     // ゆっくり音声風の速度
+            utterance.pitch = 1.5;    // ゆっくり音声風のピッチ
+            
             synth.speak(utterance);
         }
+
+        document.getElementById('playButton').addEventListener('click', speakText);
 
         document.getElementById('modeToggle').addEventListener('click', () => {
             const card = document.getElementById('modeCard');
@@ -105,9 +109,6 @@
                 button.textContent = 'ライトモード';
             }
         });
-
-        // 音声再生機能を追加
-        document.querySelector('button[onclick]').addEventListener('click', speakText);
     </script>
 </body>
 </html>

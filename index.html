@@ -75,16 +75,20 @@
         </div>
     </div>
 
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
     <script>
         function speakText() {
             const text = document.getElementById('textInput').value;
-            const synth = window.speechSynthesis;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ja-JP'; // 日本語を指定
-            utterance.rate = 0.5;     // ゆっくり音声風の速度
-            utterance.pitch = 2;    // ゆっくり音声風のピッチ
-            
-            synth.speak(utterance);
+            if (text.trim() === "") {
+                alert('テキストを入力してください。');
+                return;
+            }
+
+            // ResponsiveVoiceを使って音声を再生
+            responsiveVoice.speak(text, "Japanese Female", {
+                rate: 0.5,   // ゆっくり音声風の速度
+                pitch: 1.5   // ゆっくり音声風のピッチ
+            });
         }
 
         document.getElementById('playButton').addEventListener('click', speakText);

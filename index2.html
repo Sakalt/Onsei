@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>エフェクト付きゆっくり音声風サンプル</title>
+    <style>
+        body {
+            transition: background-color 0.5s, color 0.5s;
+            background-color: #ffffe0; /* デフォルトはライトモード */
+            color: #000000;
+            font-family: Arial, sans-serif;
+        }
+
+        .dark-mode {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        .card {
+            position: relative;
+            width: 200px;
+            height: 150px;
+            margin: 20px;
+            perspective: 1000px;
+            display: inline-block;
+        }
+
+        .card-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 1s;
+            transform-style: preserve-3d;
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front {
+            background-color: #ffffe0;
+        }
+
+        .card-back {
+            background-color: #6a0dad;
+            transform: rotateY(180deg);
+        }
+
+        .card.flip .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>エフェクト付きゆっくり音声風サンプル</h1>
+    <textarea id="textInput" rows="4" cols="50" placeholder="ここにテキストを入力してください..."></textarea><br>
+    <button id="playButton">再生</button>
+    <button id="modeToggle">ダークモード</button>
+    <div class="card" id="modeCard">
+        <div class="card-inner">
+            <div class="card-front">ライトモード</div>
+            <div class="card-back">ダークモード</div>
+        </div>
+    </div>
+
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
+    <script>
+        function speakText() {
+            const text = document.getElementById('textInput').value;
+            if (text.trim() === "") {
+                alert('テキストを入力してください。');
+                return;
+            }
+
+            // ResponsiveVoiceを使って音声を再生
+            responsiveVoice.speak(text, "Japanese Female", {
+                rate: 1.6,
+                pitch: 0.3
+            });
+        }
+
+        document.getElementById('playButton').addEventListener('click', speakText);
+
+        document.getElementById('modeToggle').addEventListener('click', () => {
+            const card = document.getElementById('modeCard');
+            const button = document.getElementById('modeToggle');
+
+            // カードに flip クラスを追加してアニメーションをトリガー
+            card.classList.toggle('flip');
+
+            // モード切り替え
+            if (document.body.classList.contains('dark-mode')) {
+                document.body.classList.remove('dark-mode');
+                document.body.style.backgroundColor = '#ffffe0'; // ライトモードの背景色
+                document.body.style.color = '#000000'; // ライトモードの文字色
+                button.textContent = 'ダークモード';
+            } else {
+                document.body.classList.add('dark-mode');
+                document.body.style.backgroundColor = '#1e1e1e'; // ダークモードの背景色
+                document.body.style.color = '#ffffff'; // ダークモードの文字色
+                button.textContent = 'ライトモード';
+            }
+        });
+    </script>
+</body>
+</html>

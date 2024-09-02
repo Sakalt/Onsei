@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルRPGゲーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        #gameArea {
+            margin-top: 20px;
+        }
+        #inventory, #combat {
+            display: none;
+            margin-top: 20px;
+        }
+        #inventory button, #combat button {
+            margin: 5px;
+        }
+        #mapCanvas {
+            border: 1px solid #000;
+        }
+        #messageBox {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>シンプルRPGゲーム</h1>
+
+    <div id="gameArea">
+        <canvas id="mapCanvas" width="800" height="600"></canvas>
+        <p id="status">ゴールド: <span id="gold">100</span></p>
+        <button onclick="showInventory()">商人に話す</button>
+        <button onclick="startCombat()">戦闘を開始</button>
+    </div>
+
+    <div id="inventory">
+        <h2>商人</h2>
+        <p>アイテムを購入できます。</p>
+        <button onclick="buyItem('sword')">剣 (50ゴールド)</button>
+        <button onclick="buyItem('bow')">弓 (40ゴールド)</button>
+        <button onclick="buyItem('fire')">火の魔法 (30ゴールド)</button>
+        <button onclick="buyItem('wind')">風の魔法 (30ゴールド)</button>
+        <button onclick="hideInventory()">閉じる</button>
+    </div>
+
+    <div id="combat">
+        <h2>戦闘</h2>
+        <p>敵が現れた！</p>
+        <button onclick="attack('sword')">剣で攻撃</button>
+        <button onclick="attack('bow')">弓で攻撃</button>
+        <button onclick="castSpell('fire')">火の魔法</button>
+        <button onclick="castSpell('wind')">風の魔法</button>
+        <p id="combatStatus"></p>
+        <button onclick="endCombat()">戦闘終了</button>
+    </div>
+
+    <div id="messageBox">
+        <button onclick="characterTalk()">キャラが話す</button>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 村のマップを描画
+        function drawVillage() {
+            // 背景
+            ctx.fillStyle = '#87CEFA'; // 空の青
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 草地
+            ctx.fillStyle = '#228B22'; // 草の緑
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+
+            // 家の描画
+            ctx.fillStyle = '#D3D3D3'; // 家の色
+            ctx.fillRect(100, canvas.height - 150, 100, 100); // 家
+            ctx.strokeRect(100, canvas.height - 150, 100, 100); // 家の枠線
+
+            // 家の屋根
+            ctx.beginPath();
+            ctx.moveTo(100, canvas.height - 150);
+            ctx.lineTo(150, canvas.height - 200);
+            ctx.lineTo(200, canvas.height - 150);
+            ctx.closePath();
+            ctx.fillStyle = '#A52A2A'; // 屋根の色
+            ctx.fill();
+            ctx.stroke();
+
+            // 木の描画
+            ctx.beginPath();
+            ctx.arc(300, canvas.height - 120, 40, 0, 2 * Math.PI); // 木の葉
+            ctx.fillStyle = '#228B22'; // 木の葉の色
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = '#8B4513'; // 木の幹の色
+            ctx.fillRect(290, canvas.height - 80, 20, 40); // 木の幹
+        }
+
+        let gold = 100;
+        let inventory = {
+            sword: false,
+            bow: false,
+            fire: false,
+            wind: false
+        };
+
+        function showInventory() {
+            document.getElementById('inventory').style.display = 'block';
+        }
+
+        function hideInventory() {
+            document.getElementById('inventory').style.display = 'none';
+        }
+
+        function buyItem(item) {
+            let price = {
+                sword: 50,
+                bow: 40,
+                fire: 30,
+                wind: 30
+            };
+
+            if (gold >= price[item]) {
+                gold -= price[item];
+                inventory[item] = true;
+                document.getElementById('gold').innerText = gold;
+                alert(`${item}を購入しました！`);
+            } else {
+                alert('ゴールドが足りません。');
+            }
+        }
+
+        function startCombat() {
+            document.getElementById('combat').style.display = 'block';
+            document.getElementById('combatStatus').innerText = '';
+        }
+
+        function attack(weapon) {
+            if (inventory[weapon]) {
+                document.getElementById('combatStatus').innerText = `${weapon}で攻撃しました！敵にダメージを与えた！`;
+            } else {
+                document.getElementById('combatStatus').innerText = `この武器は持っていません！`;
+            }
+        }
+
+        function castSpell(spell) {
+            if (inventory[spell]) {
+                document.getElementById('combatStatus').innerText = `${spell}の魔法を使いました！敵にダメージを与えた！`;
+            } else {
+                document.getElementById('combatStatus').innerText = `この魔法は持っていません！`;
+            }
+        }
+
+        function endCombat() {
+            document.getElementById('combat').style.display = 'none';
+        }
+
+        function characterTalk() {
+            const messages = [
+                "こんにちは！村にようこそ！",
+                "今日はいい天気ですね。",
+                "村の周りにはたくさんの自然があります。",
+                "何かお手伝いしましょうか？"
+            ];
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            document.getElementById('message').innerText = messages[randomIndex];
+            speakText(messages[randomIndex]);
+        }
+
+        function speakText(text) {
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP'; // 日本語
+            utterance.rate = 1; // 通常速度
+            utterance.pitch = 1; // 通常ピッチ
+            synth.speak(utterance);
+        }
+
+        // 初期描画
+        drawVillage();
+    </script>
+</body>
+</html>
